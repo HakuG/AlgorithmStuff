@@ -16,10 +16,10 @@ size = 10
 population = 200
 numcans = 50
 mrate= .05
-generations = 1
+generations = 200
 wallPoint = 5
 canPoint = 10
-numSim = 100
+numSim = 200
 
 
 # Create Tiles that the Robots go over
@@ -45,16 +45,16 @@ def weighted_choice_b(weights):
 	
 def main():
     # Create Robots and Maze
-	Robots = [[random.randint(1,6) for x in xrange(243)] for y in xrange(population)]  
+    Robots = [[random.randint(1,6) for x in xrange(243)] for y in xrange(population)]  
     Maze = [[Tile() for x in xrange(size + 2)] for y in xrange(size +2)]
     
-	# Add Walls
-	for i in xrange(size +2):
+    # Add Walls
+    for i in xrange(size +2):
         for x in xrange(size +2):
             if i == 0 or i == size + 1 or x == 0 or x == size + 1:
                 Maze[i][x].item = 1
     # Simulate the Interactions
-	for gen in xrange(generations):
+    for gen in xrange(generations):
         Robots = SimulateActions(gen, population, Robots,Maze)
 #
 
@@ -101,34 +101,36 @@ def Sex(averpoints, Robots, numRobot):
 	# Weights are based on ranking, so create an array of integers that
 	# increase based on i. To make more efficient, just make this once and
 	# make it a global array. But in case you want to make it based on points
-	# instead of rankings, keep it this way.
+	# instead of rankings, keep it this way.W
     for val in averpoints:
-        averpoints2.append((i*i))
+        averpoints2.append(i*i)
         i = i + 1
 	# Create two children that have genetic codes of their parents	
     for x in xrange(population/2):    
         Mom = weighted_choice_b(averpoints2)
         Dad = weighted_choice_b(averpoints2)
-        print(averpoints[Mom], math.sqrt(averpoints2[Mom]))
-        print(averpoints[Dad], math.sqrt(averpoints2[Dad]))
         point = random.randint(0,242)
         newPopulation.append(Robots[averpoints[Mom][1]][:point] + Robots[averpoints[Dad][1]][point:])
         newPopulation.append(Robots[averpoints[Dad][1]][:point] + Robots[averpoints[Mom][1]][point:])
     # Mutate the new population
-	newPopulation = Mutate(newPopulation, mrate)
+    newPopulation = Mutate(newPopulation, mrate)
     return newPopulation
 
 	
 # Add Cans to the Maze Randomly	
 def AddCansToMaze(maze, numcans, size):
     x = 0
-    while (x < numcans):
-        i = random.randint(1, size)
-        j = random.randint(1, size)      
-        if maze[i][j].item == 0:
-            x = x + 1
-            maze[i][j].item = 2
-            
+    for val in xrange(1, size):
+        for val2 in xrange(1, size):
+            maze[val][val2].item = 2
+    
+#    while (x < numcans):
+#        i = random.randint(1, size)
+#        j = random.randint(1, size)      
+#        if maze[i][j].item == 0:
+#            x = x + 1
+#            maze[i][j].item = 2
+#            
             
     
 # 1: North
@@ -166,7 +168,7 @@ def SimulateOne(actions, Maze):
     x = 0
     points = 0
     while (x < numSim):
-		currentAction = actions[Maze[xpos][ypos].StrategyValue]
+        currentAction = actions[Maze[xpos][ypos].StrategyValue]
         if (currentAction == 1):
             if (Maze[xpos][ypos +1].item == 1):
                 points = points - wallPoint
